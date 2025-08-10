@@ -1,76 +1,83 @@
 <template>
-  <div class="container">
-    <h1>{{ title }}</h1>
+	<div class="container">
+		<h1>{{ title }}</h1>
 
-    <!-- инпут + кнопка -->
-    <form 
-      class="form"
-      @submit.prevent="addTask"
-    >
-      <input 
-        class="form_input"
-		:class="{
-			form_input__error: error
-		}"
-        placeholder="Новая заметка"
-        v-model="newTask"
-        ref="inputField"
-      />
-      <button 
-        class="form_add-btn"
-        type="submit"
-        :disabled="loading"
-      >
-        {{ loading ? 'Загрузка': 'Добавить'  }}
-      </button>
-    </form>
-	
-    <div v-if="error" class="error">{{ error }}</div>
+		<!-- инпут + кнопка -->
+		<form 
+			class="form" 
+			@submit.prevent="addTask"
+		>
+			<input 
+				class="form_input" 
+				:class="{form_input__error: error}" 
+				placeholder="Новая заметка" 
+				v-model="newTask" 
+				ref="inputField"
+			/>
 
-    <div class="filters">
-      <button
-        v-for="filter in filters"
-        :key="filter.value"
-		class="filters_btn"
-		:class="{ active: currentFilter === filter.value }"
-        @click="currentFilter = filter.value"
-        
-      >
-        {{ filter.label }}
-      </button>
-    </div>
+			<div 
+				v-if="error" 
+				class="form_error"
+			>
+				{{ error }}
+			</div>
+			
+			<button 
+				class="form_add-btn" 
+				type="submit" 
+				:disabled="loading"
+			>
+				{{ loading ? 'Загрузка' : 'Добавить' }}
+			</button>
+		</form>
 
-    <TransitionGroup
-      name="task-list" 
-      tag="div" 
-      class="tasks"
-    >
-      <TodoItem
-        v-for="task in filteredTasks"
-        :key="task.id"
-        :task="task"
-        @check="toggleTask"
-        @edit="editTask"
-        @delete="deleteTask"
-      />
-    </TransitionGroup>
+		<!-- фильтр -->
+		<div class="filters">
+			<button 
+				v-for="filter in filters" 
+				:key="filter.value" 
+				class="filters_btn"
+				:class="{ active: currentFilter === filter.value }" 
+				@click="currentFilter = filter.value"
+			>
+				{{ filter.label }}
+			</button>
+		</div>
 
-    <button
-      v-if="tasks.length > 0 && currentFilter === 'all'"
-      @click="clearAll"
-      class="clear-button"
-    >
-      Очистить все задачи
-    </button>
+		<!-- лист тасок -->
+		<TransitionGroup 
+			name="task-list" 
+			tag="div" 
+			class="tasks"
+		>
+			<TodoItem 
+				v-for="task in filteredTasks" 
+				:key="task.id" 
+				:task="task" 
+				@check="toggleTask" 
+				@edit="editTask"
+				@delete="deleteTask" 
+			/>
+		</TransitionGroup>
 
-	<div 
-		v-if="filteredTasks.length === 0"
-		class="empty"
-	>
-		<img src="./assets/img/empty.png"></img>
-		<p>Ничего...</p>
+		<!-- очистить все таски -->
+		<button 
+			v-if="tasks.length > 0 && currentFilter === 'all'" 
+			@click="clearAll" 
+			class="clear-button"
+		>
+			Очистить все заметки
+		</button>
+
+		<!-- заглушка на емпти таски -->
+		<div 
+			v-if="filteredTasks.length === 0" 
+			class="empty"
+		>
+			<img src="./assets/img/empty.png"></img>
+			<p>Ничего...</p>
+		</div>
 	</div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -78,16 +85,15 @@ import { ref, onMounted, watch, computed, Ref } from 'vue'
 import TodoItem from './components/ToDoItem.vue'
 
 interface Task {
-  id: number;
-  text: string;
-  completed: boolean;
+	id: number;
+	text: string;
+	completed: boolean;
 }
 
 const title: string = 'To-Do List'
 const newTask = ref<string>('')
+const inputField = ref<HTMLInputElement | null>(null)
 const error = ref<string>('')
-
-const inputField = ref<HTMLInputElement | null>(null) 
 
 const loading = ref<boolean>(false)
 const tasks = ref<Task[]>([])
@@ -95,80 +101,80 @@ const tasks = ref<Task[]>([])
 const currentFilter = ref<'all' | 'active' | 'completed'>('all')
 
 const filters: { label: string; value: 'all' | 'active' | 'completed' }[] = [
-  { label: 'Все', value: 'all' },
-  { label: 'Активные', value: 'active' },
-  { label: 'Выполненные', value: 'completed' }
+	{ label: 'Все', value: 'all' },
+	{ label: 'Активные', value: 'active' },
+	{ label: 'Выполненные', value: 'completed' }
 ]
 
 const filteredTasks = computed(() => {
-  switch (currentFilter.value) {
-    case 'active':
-      return tasks.value.filter(task => !task.completed)
-    case 'completed':
-      return tasks.value.filter(task => task.completed)
-    default:
-      return tasks.value
-  }
+	switch (currentFilter.value) {
+		case 'active':
+			return tasks.value.filter(task => !task.completed)
+		case 'completed':
+			return tasks.value.filter(task => task.completed)
+		default:
+			return tasks.value
+	}
 })
 
 onMounted(() => {
-  inputField.value?.focus()
+	inputField.value?.focus()
 
-  const savedTasks = localStorage.getItem('tasks')
-  if (savedTasks) {
-    tasks.value = JSON.parse(savedTasks) as Task[]
-  }
+	const savedTasks = localStorage.getItem('tasks')
+	if (savedTasks) {
+		tasks.value = JSON.parse(savedTasks) as Task[]
+	}
 })
 
 watch(
-  tasks,
-  (newTasks) => {
-    localStorage.setItem('tasks', JSON.stringify(newTasks))
-  },
-  { deep: true }
+	tasks,
+	(newTasks) => {
+		localStorage.setItem('tasks', JSON.stringify(newTasks))
+	},
+	{ deep: true }
 )
 
 const addTask = async (): Promise<void> => {
-  if (!newTask.value.trim()) {
-    error.value = 'Пусто...'
-    return
-  }
+	if (!newTask.value.trim()) {
+		error.value = 'Пусто...'
+		return
+	}
 
-  loading.value = true
-  error.value = ''
+	loading.value = true
+	error.value = ''
 
-  await new Promise(resolve => setTimeout(resolve, 500))
+	await new Promise(resolve => setTimeout(resolve, 500))
 
-  tasks.value.push({
-    id: Date.now(),
-    text: newTask.value,
-    completed: false
-  })
+	tasks.value.push({
+		id: Date.now(),
+		text: newTask.value,
+		completed: false
+	})
 
-  newTask.value = ''
-  loading.value = false
+	newTask.value = ''
+	loading.value = false
 }
 
 const toggleTask = (id: number): void => {
-  const task = tasks.value.find(task => task.id === id)
-  if (task) task.completed = !task.completed
+	const task = tasks.value.find(task => task.id === id)
+	if (task) task.completed = !task.completed
 }
 
 const deleteTask = (id: number): void => {
-  tasks.value = tasks.value.filter(task => task.id !== id)
+	tasks.value = tasks.value.filter(task => task.id !== id)
 }
 
 const editTask = (updatedTask: Task): void => {
-  const task = tasks.value.find(task => task.id === updatedTask.id)
-  if (task) {
-    task.text = updatedTask.text
-  }
+	const task = tasks.value.find(task => task.id === updatedTask.id)
+	if (task) {
+		task.text = updatedTask.text
+	}
 }
 
 const clearAll = (): void => {
-  if (confirm('Точно удаляем все заметки?')) {
-    tasks.value = []
-  }
+	if (confirm('Точно удаляем все заметки?')) {
+		tasks.value = []
+	}
 }
 </script>
 
@@ -195,22 +201,27 @@ h1 {
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
-	flex-wrap: nowrap;
-	margin-bottom: 4px;
+	flex-wrap: wrap;
 
 	@media(max-width: 460px) {
 		display: block;
 	}
 
 	&_input {
-		width: 100%;
+		width: calc(100% - 136px);
 		box-sizing: border-box;
-		margin-right: 16px;
 		padding: 6px 16px;
 		color: $input-text;
 
-		border: 2px solid $input-border	;
+		border: 2px solid $input-border;
 		border-radius: 6px;
+
+		order: 0;
+
+		@media(max-width: 460px) {
+			width: 100%;
+			margin-bottom: 8px;
+		}
 
 		&::placeholder {
 			font-size: 16px;
@@ -225,7 +236,7 @@ h1 {
 		&:focus-visible {
 			border-color: $input-focus-border;
 		}
-		
+
 		&__error {
 			border-color: $error;
 
@@ -236,10 +247,6 @@ h1 {
 			&:focus-visible {
 				border-color: $error;
 			}
-		}
-
-		@media(max-width: 460px) {
-			margin-bottom: 16px;
 		}
 	}
 
@@ -252,6 +259,8 @@ h1 {
 		background-color: $button-bg;
 		border: 2px solid $button-border;
 		border-radius: 6px;
+
+		order: 2;
 
 		cursor: pointer;
 
@@ -269,12 +278,16 @@ h1 {
 			width: 100%;
 		}
 	}
-}
 
-.error {
-	padding-left: 18px;
-	color: $error;
-	font-size: 12px;
+	&_error {
+		width: 100%;
+		padding-left: 18px;
+		margin-bottom: 16px;
+		color: $error;
+		font-size: 12px;
+
+		order: 3;
+}
 }
 
 .filters {
@@ -317,7 +330,7 @@ h1 {
 		flex-wrap: wrap;
 		gap: 0;
 
-		& > button {
+		&>button {
 			width: 100%;
 			margin-bottom: 4px;
 		}
@@ -348,13 +361,18 @@ h1 {
 }
 
 .task-list {
-	&-enter-active,  &-leave-active {
+
+	&-enter-active,
+	&-leave-active {
 		transition: all 0.5s ease;
 	}
-	&-enter-from, &-leave-to {
+
+	&-enter-from,
+	&-leave-to {
 		opacity: 0;
 		transform: translateY(30px);
 	}
+
 	&-move {
 		transition: transform 0.3s ease;
 	}

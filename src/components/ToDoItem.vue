@@ -1,31 +1,15 @@
 <template>
   <div class="task">
     <label class="custom-checkbox">
-		  <input
-        type="checkbox" 
-        :checked="task.completed"
-        @change="$emit('check', task.id)"
-      >
-		    <span class="checkmark"></span>
+      <input type="checkbox" :checked="task.completed" @change="$emit('check', task.id)">
+      <span class="checkmark"></span>
     </label>
-    <span 
-      v-if="!isEditing"
-      :class="{ completed: task.completed }"
-      @dblclick="editTask"
-    >
+    <span v-if="!isEditing" :class="{ completed: task.completed }" @dblclick="editTask">
       {{ task.text }}
     </span>
 
-    <input
-      v-else
-      class="task_input"
-      type="text"
-      v-model="editedText"
-      @blur="saveNewTask"
-      @keyup.enter="saveNewTask"
-      @keyup.escape="cancelNewChange"
-      v-focus
-    >
+    <input v-else class="task_input" type="text" v-model="editedText" @blur="saveNewTask" @keyup.enter="saveNewTask"
+      @keyup.escape="cancelNewChange" v-focus>
 
     <button @click="$emit('delete', task.id)" class="task_delete">
       <img src="../assets/img/dlt.png" alt="delete">
@@ -81,67 +65,68 @@ const cancelNewChange = (): void => {
 
 <style lang="scss">
 .tasks {
-	margin-top: 20px;
+  margin-top: 20px;
 }
 
 .task {
-	display: flex;
-	align-items: center;
-	padding: 16px;
-	margin-bottom: 20px;
-	position: relative;
-	border-bottom: 1px solid $input-hover-border;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  border-bottom: 1px solid $input-hover-border;
 
-	& input[type="checkbox"] {
-		margin-right: 10px;
-	}
+  & input[type="checkbox"] {
+    margin-right: 10px;
+  }
 
-	& span {
-		max-width: calc(100% - 60px);
-		overflow-wrap: break-word;
-		white-space: normal;
-	}
-	& span.completed {
-		text-decoration: line-through;
-		color: #aaa;
-	}
+  & span {
+    max-width: calc(100% - 60px);
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
 
-	&_input {
-		width: fit-content;
-		max-width: calc(100% - 60px);
-		border: 0.3px solid $input-hover-border;
-		background-color: transparent;
-	}
+  & span.completed {
+    text-decoration: line-through;
+    color: #aaa;
+  }
 
-	&_delete {
-		position: absolute;
-		right: 10px;
+  &_input {
+    width: fit-content;
+    max-width: calc(100% - 60px);
+    border: 0.3px solid $input-hover-border;
+    background-color: transparent;
+  }
+
+  &_delete {
+    position: absolute;
+    right: 10px;
 
     display: flex;
-		background: none;
-		border: 1px solid rgba(0, 0, 0, 0.258);
-		border-radius: 4px;
-		cursor: pointer;
-		padding: 6px 6px;
+    background: none;
+    border: 1px solid rgba(0, 0, 0, 0.258);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 6px 6px;
 
-		font-size: 16px;
-		line-height: 120%;
-		color: $button-text;
+    font-size: 16px;
+    line-height: 120%;
+    color: $button-text;
 
-		&:hover {
-			background-color: #ff6b6b;
-		}
+    &:hover {
+      background-color: #ff6b6b;
+    }
 
     &:focus-visible {
       border-color: #ff6b6b;
       background-color: #ff6b6b;
-	}
+    }
 
-    & > img {
+    &>img {
       width: 16px;
       height: 16px;
     }
-	}
+  }
 
   .custom-checkbox {
     position: relative;
@@ -159,7 +144,7 @@ const cancelNewChange = (): void => {
       height: 0;
       width: 0;
 
-      &:checked ~ .checkmark {
+      &:checked~.checkmark {
         background-color: $button-bg;
         border-color: $button-border;
 
@@ -168,12 +153,12 @@ const cancelNewChange = (): void => {
         }
       }
 
-      &:focus ~ .checkmark {
+      &:focus~.checkmark {
         border-color: $input-focus-border;
         box-shadow: 0 0 0 2px rgba($input-focus-border, 0.2);
       }
 
-      &:hover:not(:checked) ~ .checkmark {
+      &:hover:not(:checked)~.checkmark {
         border-color: $input-hover-border;
       }
     }
@@ -203,7 +188,7 @@ const cancelNewChange = (): void => {
       }
     }
 
-    &:hover input:not(:checked) ~ .checkmark {
+    &:hover input:not(:checked)~.checkmark {
       background-color: darken($input-bg, 5%);
     }
 
